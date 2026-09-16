@@ -675,11 +675,11 @@ export default function App() {
         )}
       </div>
 
-      <div ref={joystickRef} id="joystickZone" />
+      <div ref={joystickRef} id="joystickZone" aria-label="仮想スティック" />
 
       {/* 画面下部：データ再生バー */}
       {activeRoute && (
-        <div style={{
+        <div className="modal-overlay" style={{
           position: 'absolute',
           bottom: '24px',
           left: '50%',
@@ -749,7 +749,7 @@ export default function App() {
           alignItems: 'center',
           padding: '20px'
         }}>
-          <div style={{
+          <div className="modal-content" style={{
             background: '#fff',
             borderRadius: '16px',
             padding: '24px',
@@ -781,7 +781,7 @@ export default function App() {
 
       {/* 2. 終了感謝モーダル */}
       {showThankYouModal && (
-        <div style={{
+        <div className="modal-overlay" style={{
           position: 'fixed',
           top: 0,
           left: 0,
@@ -794,7 +794,7 @@ export default function App() {
           alignItems: 'center',
           padding: '20px'
         }}>
-          <div style={{
+          <div className="modal-content" style={{
             background: '#fff',
             borderRadius: '16px',
             padding: '24px',

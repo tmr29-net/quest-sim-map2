@@ -77,8 +77,10 @@ body, html, #root {
   position: absolute;
   z-index: 1001;
   width: 290px;
-  max-height: 80vh;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 81px);
   overflow-y: auto;
+  box-sizing: border-box;
   background: rgba(255, 255, 255, 0.88);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -140,4 +142,42 @@ html, body, #root, .map-container {
   overflow: hidden;
   touch-action: none; /* スマホの不要なスクロールを無効化 */
   user-select: none;  /* テキスト選択を無効化 */
+}
+
+/* nipplejs の入力領域を地図より前面に固定する */
+#joystickZone {
+  position: absolute;
+  z-index: 1100;
+  left: 0;
+  bottom: 0;
+  width: 180px;
+  height: 180px;
+  touch-action: none;
+  pointer-events: auto;
+}
+
+.modal-overlay {
+  box-sizing: border-box;
+  width: 100% !important;
+  height: 100dvh !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.modal-content {
+  box-sizing: border-box;
+  width: min(100%, 420px);
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .modal-overlay {
+    padding: 12px !important;
+  }
+
+  .modal-content {
+    padding: 18px !important;
+    max-height: calc(100dvh - 24px);
+  }
 }
