@@ -180,6 +180,45 @@ export default function App() {
     });
     manager.on('end', () => { moveVector.current = { x: 0, y: 0 }; });
 
+    const joystickZone = joystickRef.current;
+    const joystickCenter = { x: 60, y: 120 };
+    const joystickRadius = 45;
+    let activePointerId = null;
+
+    const updatePointerVector = (event) => {
+      if (event.pointerId !== activePointerId) return;
+      const rect = joystickZone.getBoundingClientRect();
+      const dx = event.clientX - rect.left - joystickCenter.x;
+      const dy = event.clientY - rect.top - joystickCenter.y;
+      const distance = Math.hypot(dx, dy);
+      const scale = distance > joystickRadius ? joystickRadius / distance : 1;
+      moveVector.current = {
+        x: (dx * scale) / joystickRadius,
+        y: (-dy * scale) / joystickRadius
+      };
+    };
+    const handlePointerDown = (event) => {
+      activePointerId = event.pointerId;
+      joystickZone.setPointerCapture(event.pointerId);
+      updatePointerVector(event);
+      event.preventDefault();
+    };
+    const handlePointerMove = (event) => {
+      updatePointerVector(event);
+      if (event.pointerId === activePointerId) event.preventDefault();
+    };
+    const handlePointerEnd = (event) => {
+      if (event.pointerId !== activePointerId) return;
+      activePointerId = null;
+      moveVector.current = { x: 0, y: 0 };
+      event.preventDefault();
+    };
+
+    joystickZone.addEventListener('pointerdown', handlePointerDown, { passive: false });
+    joystickZone.addEventListener('pointermove', handlePointerMove, { passive: false });
+    joystickZone.addEventListener('pointerup', handlePointerEnd, { passive: false });
+    joystickZone.addEventListener('pointercancel', handlePointerEnd, { passive: false });
+
     const keysPressed = {};
     const handleKeyDown = (e) => { keysPressed[e.key.toLowerCase()] = true; updateKeyVector(); };
     const handleKeyUp = (e) => { keysPressed[e.key.toLowerCase()] = false; updateKeyVector(); };
@@ -249,6 +288,10 @@ export default function App() {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
+      joystickZone.removeEventListener('pointerdown', handlePointerDown);
+      joystickZone.removeEventListener('pointermove', handlePointerMove);
+      joystickZone.removeEventListener('pointerup', handlePointerEnd);
+      joystickZone.removeEventListener('pointercancel', handlePointerEnd);
       cancelAnimationFrame(animationFrameId);
       manager.destroy();
       map.remove();
@@ -679,7 +722,7 @@ export default function App() {
 
       {/* 画面下部：データ再生バー */}
       {activeRoute && (
-        <div className="modal-overlay" style={{
+        <div style={{
           position: 'absolute',
           bottom: '24px',
           left: '50%',
@@ -736,7 +779,7 @@ export default function App() {
 
       {/* 1. 初回説明モーダル */}
       {showWelcomeModal && (
-        <div style={{
+        <div className="modal-overlay" style={{
           position: 'fixed',
           top: 0,
           left: 0,
